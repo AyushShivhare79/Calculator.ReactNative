@@ -10,46 +10,64 @@ import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 function App() {
   const data = [
-    '00',
-    '0',
-    '.',
-    '1',
-    '2',
-    '3',
-    '4',
-    '5',
-    '6',
-    '7',
-    '8',
-    '9',
     'C',
     '%',
+    '⌫',
     '/',
-    'x',
-    '-',
+    7,
+    8,
+    9,
+    '×',
+    4,
+    5,
+    6,
+    '−',
+    1,
+    2,
+    3,
     '+',
+    0o0,
+    0,
+    '.',
     '=',
   ];
 
   return (
     <SafeAreaProvider>
       <SafeAreaView style={{ backgroundColor: 'black', height: '100%' }}>
-        <SafeAreaView style={{ borderWidth: 2, borderColor: 'white' }}>
+        <SafeAreaView
+          style={{ height: '45%', borderWidth: 2, borderColor: 'white' }}
+        >
           <Text style={{ color: 'white' }}>asdf</Text>
         </SafeAreaView>
-        <SafeAreaView>
+
+        <SafeAreaView
+          style={{
+            height: '100%',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
           <FlatList
             data={data}
-            contentContainerStyle={{ flexDirection: 'row', gap: 10 }}
+            numColumns={4}
+            horizontal={false}
+            columnWrapperStyle={{ gap: 10 }}
+            contentContainerStyle={{ gap: 14, padding: 10 }}
             renderItem={({ item }) => {
               return (
                 <SafeAreaView
                   style={{
-                    borderRadius: 20,
-                    backgroundColor: 'darkgray',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    width: 70,
+                    height: 70,
+                    borderRadius: 50,
+                    backgroundColor:
+                      typeof item === 'number' ? '#333333' : '#616569',
                   }}
                 >
-                  <Text style={{ color: 'white' }}>{item}</Text>
+                  <Text style={{ fontSize: 16, color: 'white' }}>{item}</Text>
                 </SafeAreaView>
               );
             }}
