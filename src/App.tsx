@@ -15,6 +15,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { evaluate } from 'mathjs';
 
 function App() {
   const data = [
@@ -41,7 +42,7 @@ function App() {
   ];
 
   const [evaluation, setEvaluation] = useState('');
-  const [sol, setSol] = useState(0);
+  const [sol, setSol] = useState('');
 
   const handleClick = (item: string) => {
     switch (item) {
@@ -50,16 +51,16 @@ function App() {
         break;
       case 'C':
         setEvaluation('');
+        setSol('');
         break;
       case '⌫':
         setEvaluation(evaluation.substring(0, evaluation.length - 1));
         break;
 
       default:
+        setEvaluation(prev => prev + item);
         break;
     }
-    if (item.toString() === '=');
-    setEvaluation(prev => prev + item.toString());
   };
 
   const handleCalculation = () => {
@@ -70,50 +71,40 @@ function App() {
       .split('÷')
       .join('/');
 
-    setSol(eval(updatedEvaluation));
+    setSol(evaluate(updatedEvaluation));
   };
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView style={{ backgroundColor: 'black', height: '100%' }}>
-        <SafeAreaView
-          style={{
-            position: 'relative',
-            height: '45%',
-            borderWidth: 2,
-            borderColor: 'white',
-          }}
-        >
-          <SafeAreaView style={{ position: 'absolute', right: 0, bottom: 0 }}>
+      <SafeAreaView style={styles.screenContainer}>
+        <SafeAreaView style={styles.displaySection}>
+          <SafeAreaView style={styles.displayContent}>
             <TextInput
               editable={false}
               value={evaluation}
-              style={{ color: 'white', fontSize: 40 }}
+              style={styles.displayText}
               keyboardType="numeric"
             />
             <TextInput
               editable={false}
               value={sol.toString()}
-              style={{ color: 'white', fontSize: 40 }}
+              style={styles.displayText}
               keyboardType="numeric"
             />
           </SafeAreaView>
         </SafeAreaView>
 
-        <SafeAreaView
-          style={{
-            height: '100%',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
-        >
+        <SafeAreaView style={styles.keypadSection}>
           <FlatList
             data={data}
             numColumns={4}
             horizontal={false}
-            columnWrapperStyle={{ gap: 10 }}
-            contentContainerStyle={{ gap: 14, padding: 10 }}
+            columnWrapperStyle={styles.keypadRow}
+            contentContainerStyle={styles.keypadGrid}
             renderItem={({ item }) => {
+              const isNumber =
+                typeof item === 'number' || item === '00' || item === '.';
+
               return (
                 <TouchableOpacity
                   onPress={() => {
@@ -121,17 +112,16 @@ function App() {
                   }}
                 >
                   <SafeAreaView
-                    style={{
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      width: 70,
-                      height: 70,
-                      borderRadius: 50,
-                      backgroundColor:
-                        typeof item === 'number' ? '#333333' : '#616569',
-                    }}
+                    style={[
+                      styles.calculatorButton,
+                      isNumber
+                        ? styles.numberButton
+                        : item === '='
+                        ? styles.calculateButton
+                        : styles.operatorButton,
+                    ]}
                   >
-                    <Text style={{ fontSize: 16, color: 'white' }}>{item}</Text>
+                    <Text style={styles.buttonText}>{item}</Text>
                   </SafeAreaView>
                 </TouchableOpacity>
               );
@@ -144,9 +134,39 @@ function App() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
+  screenContainer: { backgroundColor: 'black', height: '100%' },
+  displaySection: {
+    position: 'relative',
+    height: '45%',
+    borderWidth: 2,
+    borderColor: 'white',
   },
+  displayContent: { position: 'absolute', right: 0, bottom: 0 },
+  displayText: { color: 'white', fontSize: 40 },
+  keypadSection: {
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  calculatorButton: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 70,
+    height: 70,
+    borderRadius: 50,
+  },
+  numberButton: {
+    backgroundColor: '#333333',
+  },
+  operatorButton: {
+    backgroundColor: '#616569',
+  },
+  calculateButton: {
+    backgroundColor: '#FF7034',
+  },
+  buttonText: { fontSize: 16, color: 'white' },
+  keypadGrid: { gap: 14, padding: 10 },
+  keypadRow: { gap: 10 },
 });
 
 export default App;
