@@ -15,7 +15,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import { evaluate } from 'mathjs';
+import { Parser } from 'expr-eval';
 
 function App() {
   const data = [
@@ -43,22 +43,42 @@ function App() {
 
   const [evaluation, setEvaluation] = useState('');
   const [sol, setSol] = useState('');
+  const [isResultActive, setIsResultActive] = useState(false);
 
   const handleClick = (item: string) => {
     switch (item) {
       case '=':
         handleCalculation();
+        setIsResultActive(true);
         break;
       case 'C':
         setEvaluation('');
         setSol('');
+        setIsResultActive(false);
         break;
       case '⌫':
-        setEvaluation(evaluation.substring(0, evaluation.length - 1));
+        if (isResultActive) {
+          setEvaluation('');
+          setSol('');
+        } else {
+          setEvaluation(evaluation.substring(0, evaluation.length - 1));
+        }
+        setIsResultActive(false);
         break;
 
       default:
-        setEvaluation(prev => prev + item);
+        if (isResultActive) {
+          const isOperator = ['+', '-', 'x', '÷', '%'].includes(item);
+          if (isOperator) {
+            setEvaluation(sol + item);
+          } else {
+            setEvaluation(item);
+          }
+          setSol('');
+        } else {
+          setEvaluation(prev => prev + item);
+        }
+        setIsResultActive(false);
         break;
     }
   };
@@ -71,7 +91,7 @@ function App() {
       .split('÷')
       .join('/');
 
-    setSol(evaluate(updatedEvaluation));
+    setSol(Parser.evaluate(updatedEvaluation).toString());
   };
 
   return (
@@ -82,13 +102,13 @@ function App() {
             <TextInput
               editable={false}
               value={evaluation}
-              style={styles.displayText}
+              style={isResultActive ? styles.inactiveText : styles.activeText}
               keyboardType="numeric"
             />
             <TextInput
               editable={false}
               value={sol.toString()}
-              style={styles.displayText}
+              style={isResultActive ? styles.activeText : styles.inactiveText}
               keyboardType="numeric"
             />
           </SafeAreaView>
@@ -142,7 +162,8 @@ const styles = StyleSheet.create({
     borderColor: 'white',
   },
   displayContent: { position: 'absolute', right: 0, bottom: 0 },
-  displayText: { color: 'white', fontSize: 40 },
+  activeText: { color: 'white', fontSize: 40 },
+  inactiveText: { color: '#616569', fontSize: 30 },
   keypadSection: {
     height: '100%',
     justifyContent: 'center',
