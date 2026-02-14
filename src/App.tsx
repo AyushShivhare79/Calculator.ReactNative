@@ -5,7 +5,15 @@
  * @format
  */
 
-import { FlatList, StyleSheet, Text } from 'react-native';
+import { useState } from 'react';
+import {
+  Alert,
+  FlatList,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+} from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 function App() {
@@ -13,32 +21,83 @@ function App() {
     'C',
     '%',
     '⌫',
-    '/',
+    '÷',
     7,
     8,
     9,
-    '×',
+    'x',
     4,
     5,
     6,
-    '−',
+    '-',
     1,
     2,
     3,
     '+',
-    0o0,
+    '00',
     0,
     '.',
     '=',
   ];
 
+  const [evaluation, setEvaluation] = useState('');
+  const [sol, setSol] = useState(0);
+
+  const handleClick = (item: string) => {
+    switch (item) {
+      case '=':
+        handleCalculation();
+        break;
+      case 'C':
+        setEvaluation('');
+        break;
+      case '⌫':
+        setEvaluation(evaluation.substring(0, evaluation.length - 1));
+        break;
+
+      default:
+        break;
+    }
+    if (item.toString() === '=');
+    setEvaluation(prev => prev + item.toString());
+  };
+
+  const handleCalculation = () => {
+    if (!evaluation) return Alert.alert('Please enter!');
+    const updatedEvaluation = evaluation
+      .split('x')
+      .join('*')
+      .split('÷')
+      .join('/');
+
+    setSol(eval(updatedEvaluation));
+  };
+
   return (
     <SafeAreaProvider>
       <SafeAreaView style={{ backgroundColor: 'black', height: '100%' }}>
         <SafeAreaView
-          style={{ height: '45%', borderWidth: 2, borderColor: 'white' }}
+          style={{
+            position: 'relative',
+            height: '45%',
+            borderWidth: 2,
+            borderColor: 'white',
+          }}
         >
-          <Text style={{ color: 'white' }}>asdf</Text>
+          <SafeAreaView style={{ position: 'absolute', right: 0, bottom: 0 }}>
+            <TextInput
+              editable={false}
+              value={evaluation}
+              style={{ color: 'white', fontSize: 40 }}
+              keyboardType="numeric"
+            />
+            <TextInput
+              editable={false}
+              value={sol.toString()}
+              style={{ color: 'white', fontSize: 40 }}
+              keyboardType="numeric"
+            />
+          </SafeAreaView>
         </SafeAreaView>
 
         <SafeAreaView
@@ -56,19 +115,25 @@ function App() {
             contentContainerStyle={{ gap: 14, padding: 10 }}
             renderItem={({ item }) => {
               return (
-                <SafeAreaView
-                  style={{
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    width: 70,
-                    height: 70,
-                    borderRadius: 50,
-                    backgroundColor:
-                      typeof item === 'number' ? '#333333' : '#616569',
+                <TouchableOpacity
+                  onPress={() => {
+                    handleClick(item.toString());
                   }}
                 >
-                  <Text style={{ fontSize: 16, color: 'white' }}>{item}</Text>
-                </SafeAreaView>
+                  <SafeAreaView
+                    style={{
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      width: 70,
+                      height: 70,
+                      borderRadius: 50,
+                      backgroundColor:
+                        typeof item === 'number' ? '#333333' : '#616569',
+                    }}
+                  >
+                    <Text style={{ fontSize: 16, color: 'white' }}>{item}</Text>
+                  </SafeAreaView>
+                </TouchableOpacity>
               );
             }}
           />
