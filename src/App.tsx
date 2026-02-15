@@ -156,12 +156,13 @@ function App() {
 const styles = StyleSheet.create({
   screenContainer: { backgroundColor: 'black', height: '100%' },
   displaySection: {
-    position: 'relative',
+    justifyContent: 'flex-end',
     height: '45%',
-    borderWidth: 2,
-    borderColor: 'white',
   },
-  displayContent: { position: 'absolute', right: 0, bottom: 0 },
+  displayContent: {
+    alignItems: 'flex-end',
+    padding: 10,
+  },
   activeText: { color: 'white', fontSize: 40 },
   inactiveText: { color: '#616569', fontSize: 30 },
   keypadSection: {
@@ -172,7 +173,7 @@ const styles = StyleSheet.create({
   calculatorButton: {
     justifyContent: 'center',
     alignItems: 'center',
-    width: 70,
+    width: 80,
     height: 70,
     borderRadius: 50,
   },
@@ -185,9 +186,9 @@ const styles = StyleSheet.create({
   calculateButton: {
     backgroundColor: '#FF7034',
   },
-  buttonText: { fontSize: 16, color: 'white' },
+  buttonText: { fontSize: 20, color: 'white' },
   keypadGrid: { gap: 14, padding: 10 },
-  keypadRow: { gap: 10 },
+  keypadRow: { gap: 20,  },
 });
 
 export default App;
